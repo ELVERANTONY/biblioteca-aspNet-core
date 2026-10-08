@@ -1,0 +1,124 @@
+@model Biblioteca.Web.Models.SocioPaginadoViewModel
+
+@{
+    ViewData["Title"] = "Listado de Socios";
+}
+
+<div class="container-fluid">
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">
+                <i class="fas fa-users text-primary me-2"></i>Listado de Socios
+            </h1>
+            <p class="text-muted mb-0">Gestiona los socios de la biblioteca</p>
+        </div>
+        <a asp-action="Create" class="btn btn-success">
+            <i class="fas fa-user-plus me-1"></i>Crear Nuevo Socio
+        </a>
+    </div>
+
+    <!-- Mensajes -->
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Mensaje"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Tabla -->
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-id-card me-1"></i>DNI</th>
+                            <th><i class="fas fa-user me-1"></i>Nombre</th>
+                            <th><i class="fas fa-envelope me-1"></i>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Socios)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-id-card me-1"></i>@item.DNI
+                                    </span>
+                                </td>
+                                <td class="fw-medium">
+                                    <i class="fas fa-user-circle text-primary me-1"></i>@item.Nombre
+                                </td>
+                                <td>
+                                    <a href="mailto:@item.Email" class="text-decoration-none">
+                                        <i class="fas fa-envelope me-1"></i>@item.Email
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">
+                    <i class="fas fa-info-circle me-1"></i>Mostrando @Model.Socios.Count() de @Model.Paginacion.TotalRegistros socios
+                </small>
+                <small class="text-muted">
+                    Página @Model.Paginacion.PaginaActual de @Model.Paginacion.TotalPaginas
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Paginación -->
+    @if (Model.Paginacion.TotalPaginas > 1)
+    {
+        <nav aria-label="Paginación" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <!-- Primera página -->
+                <li class="page-item @(Model.Paginacion.TienePaginaAnterior ? "" : "disabled")">
+                    <a class="page-link" asp-action="Index" asp-route-pagina="1" title="Primera página">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                </li>
+
+                <!-- Página anterior -->
+                <li class="page-item @(Model.Paginacion.TienePaginaAnterior ? "" : "disabled")">
+                    <a class="page-link" asp-action="Index" asp-route-pagina="@(Model.Paginacion.PaginaActual - 1)" title="Página anterior">
+                        <i class="fas fa-angle-left"></i>
+                    </a>
+                </li>
+
+                <!-- Números de página -->
+                @{
+                    int inicio = Math.Max(1, Model.Paginacion.PaginaActual - 2);
+                    int fin = Math.Min(Model.Paginacion.TotalPaginas, Model.Paginacion.PaginaActual + 2);
+                }
+                @for (int i = inicio; i <= fin; i++)
+                {
+                    <li class="page-item @(i == Model.Paginacion.PaginaActual ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-pagina="@i">@i</a>
+                    </li>
+                }
+
+                <!-- Página siguiente -->
+                <li class="page-item @(Model.Paginacion.TienePaginaSiguiente ? "" : "disabled")">
+                    <a class="page-link" asp-action="Index" asp-route-pagina="@(Model.Paginacion.PaginaActual + 1)" title="Página siguiente">
+                        <i class="fas fa-angle-right"></i>
+                    </a>
+                </li>
+
+                <!-- Última página -->
+                <li class="page-item @(Model.Paginacion.TienePaginaSiguiente ? "" : "disabled")">
+                    <a class="page-link" asp-action="Index" asp-route-pagina="@Model.Paginacion.TotalPaginas" title="Última página">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
+</div>

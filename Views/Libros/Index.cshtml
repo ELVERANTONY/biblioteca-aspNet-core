@@ -1,0 +1,137 @@
+@model Biblioteca.Web.Models.LibroPaginadoViewModel
+
+@{
+    ViewData["Title"] = "Listado de Libros";
+}
+
+<div class="container-fluid">
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">
+                <i class="fas fa-book text-primary me-2"></i>Listado de Libros
+            </h1>
+            <p class="text-muted mb-0">Gestiona el catálogo de libros de la biblioteca</p>
+        </div>
+        <a asp-action="Create" class="btn btn-success">
+            <i class="fas fa-plus me-1"></i>Crear Nuevo Libro
+        </a>
+    </div>
+
+    <!-- Mensajes -->
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Mensaje"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Búsqueda -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form asp-action="Index" method="get" class="row g-3 align-items-end">
+                <div class="col-md-8">
+                    <label class="form-label">
+                        <i class="fas fa-search me-1"></i>Buscar por título
+                    </label>
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" name="titulo" class="form-control" placeholder="Ingrese el título del libro..." value="@Model.TituloBusqueda" />
+                    </div>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="fas fa-search me-1"></i>Buscar
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-times me-1"></i>Limpiar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-heading me-1"></i>Título</th>
+                            <th><i class="fas fa-barcode me-1"></i>ISBN</th>
+                            <th><i class="fas fa-user me-1"></i>Autor</th>
+                            <th><i class="fas fa-copy me-1"></i>Ejemplares</th>
+                            <th class="text-center"><i class="fas fa-cogs me-1"></i>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Libros)
+                        {
+                            <partial name="_LibroRow" model="item" />
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">
+                    <i class="fas fa-info-circle me-1"></i>Mostrando @Model.Libros.Count() de @Model.Paginacion.TotalRegistros libros
+                </small>
+                <small class="text-muted">
+                    Página @Model.Paginacion.PaginaActual de @Model.Paginacion.TotalPaginas
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Paginación -->
+    @if (Model.Paginacion.TotalPaginas > 1)
+    {
+        <nav aria-label="Paginación" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <!-- Primera página -->
+                <li class="page-item @(Model.Paginacion.TienePaginaAnterior ? "" : "disabled")">
+                    <a class="page-link" asp-action="Index" asp-route-pagina="1" asp-route-titulo="@Model.TituloBusqueda" title="Primera página">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                </li>
+
+                <!-- Página anterior -->
+                <li class="page-item @(Model.Paginacion.TienePaginaAnterior ? "" : "disabled")">
+                    <a class="page-link" asp-action="Index" asp-route-pagina="@(Model.Paginacion.PaginaActual - 1)" asp-route-titulo="@Model.TituloBusqueda" title="Página anterior">
+                        <i class="fas fa-angle-left"></i>
+                    </a>
+                </li>
+
+                <!-- Números de página -->
+                @{
+                    int inicio = Math.Max(1, Model.Paginacion.PaginaActual - 2);
+                    int fin = Math.Min(Model.Paginacion.TotalPaginas, Model.Paginacion.PaginaActual + 2);
+                }
+                @for (int i = inicio; i <= fin; i++)
+                {
+                    <li class="page-item @(i == Model.Paginacion.PaginaActual ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-pagina="@i" asp-route-titulo="@Model.TituloBusqueda">@i</a>
+                    </li>
+                }
+
+                <!-- Página siguiente -->
+                <li class="page-item @(Model.Paginacion.TienePaginaSiguiente ? "" : "disabled")">
+                    <a class="page-link" asp-action="Index" asp-route-pagina="@(Model.Paginacion.PaginaActual + 1)" asp-route-titulo="@Model.TituloBusqueda" title="Página siguiente">
+                        <i class="fas fa-angle-right"></i>
+                    </a>
+                </li>
+
+                <!-- Última página -->
+                <li class="page-item @(Model.Paginacion.TienePaginaSiguiente ? "" : "disabled")">
+                    <a class="page-link" asp-action="Index" asp-route-pagina="@Model.Paginacion.TotalPaginas" asp-route-titulo="@Model.TituloBusqueda" title="Última página">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
+</div>

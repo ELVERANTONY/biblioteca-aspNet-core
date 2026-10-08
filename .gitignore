@@ -1,0 +1,58 @@
+# .NET - Binarios y objetos de compilación
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.userprefs
+
+# Visual Studio
+.vs/
+.vscode/
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+msbuild.log
+msbuild.err
+msbuild.wrn
+
+# NuGet
+packages/
+*.nupkg
+*.snupkg
+.nuget/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Archivos de log
+*.log
+
+# Archivos de configuración local
+appsettings.Development.json
+*.local.json
+
+# Capturas de pantalla (opcional, comenta si quieres subirlas)
+# capturas/*.png
+
+# Archivos temporales
+*.tmp
+*.temp
+*~

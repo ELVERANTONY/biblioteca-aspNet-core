@@ -1,0 +1,253 @@
+@model Biblioteca.Web.Models.PrestamoPaginadoViewModel
+
+@{
+    ViewData["Title"] = "Reporte de Préstamos";
+    var hoy = DateTime.Now.ToString("yyyy-MM-dd");
+}
+
+<div class="container-fluid">
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">
+                <i class="fas fa-chart-bar text-primary me-2"></i>Reporte de Préstamos
+            </h1>
+            <p class="text-muted mb-0">Consulta los préstamos realizados en un período</p>
+        </div>
+    </div>
+
+    <!-- Filtro -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-filter me-2"></i>Filtro de Fechas
+        </div>
+        <div class="card-body">
+            <form asp-action="Reporte" method="get" id="formReporte" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label">
+                        <i class="fas fa-calendar-alt me-1"></i>Desde
+                    </label>
+                    <input type="date" name="desde" id="fechaDesde" class="form-control" value="@ViewData["Desde"]" max="@hoy" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">
+                        <i class="fas fa-calendar-alt me-1"></i>Hasta
+                    </label>
+                    <input type="date" name="hasta" id="fechaHasta" class="form-control" value="@ViewData["Hasta"]" max="@hoy" />
+                </div>
+                <div class="col-md-4 text-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="fas fa-search me-1"></i>Generar Reporte
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="limpiarFiltros()">
+                        <i class="fas fa-eraser me-1"></i>Limpiar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-list me-2"></i>Resultados
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-hashtag me-1"></i>ID</th>
+                            <th><i class="fas fa-user me-1"></i>Socio</th>
+                            <th><i class="fas fa-id-card me-1"></i>DNI</th>
+                            <th><i class="fas fa-book me-1"></i>Libros</th>
+                            <th><i class="fas fa-calendar me-1"></i>Fecha Préstamo</th>
+                            <th><i class="fas fa-calendar-check me-1"></i>Fecha Límite</th>
+                            <th><i class="fas fa-info-circle me-1"></i>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Prestamos)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary">#@Html.DisplayFor(modelItem => item.PrestamoId)</span>
+                                </td>
+                                <td class="fw-medium">
+                                    <i class="fas fa-user-circle text-primary me-1"></i>@Html.DisplayFor(modelItem => item.NombreSocio)
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark">
+                                        <i class="fas fa-id-card me-1"></i>@Html.DisplayFor(modelItem => item.DNI)
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info text-dark">
+                                        <i class="fas fa-book me-1"></i>@Html.DisplayFor(modelItem => item.Libros)
+                                    </span>
+                                </td>
+                                <td>
+                                    <i class="fas fa-calendar text-muted me-1"></i>@item.FechaPrestamo.ToString("yyyy-MM-dd")
+                                </td>
+                                <td>
+                                    <i class="fas fa-calendar-check text-muted me-1"></i>@item.FechaLimite.ToString("yyyy-MM-dd")
+                                </td>
+                                <td>
+                                    @if (item.Estado == "Devuelto")
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check-circle me-1"></i>@Html.DisplayFor(modelItem => item.Estado)
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-clock me-1"></i>@Html.DisplayFor(modelItem => item.Estado)
+                                        </span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">
+                    <i class="fas fa-info-circle me-1"></i>Mostrando @Model.Prestamos.Count() de @Model.Paginacion.TotalRegistros préstamos
+                </small>
+                <small class="text-muted">
+                    Página @Model.Paginacion.PaginaActual de @Model.Paginacion.TotalPaginas
+                </small>
+            </div>
+        </div>
+    </div>
+
+    @if (!Model.Prestamos.Any())
+    {
+        <div class="alert alert-info mt-4" role="alert">
+            <i class="fas fa-info-circle me-2"></i>
+            No se encontraron préstamos en el rango de fechas seleccionado.
+        </div>
+    }
+
+    <!-- Paginación -->
+    @if (Model.Paginacion.TotalPaginas > 1)
+    {
+        <nav aria-label="Paginación" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <!-- Primera página -->
+                <li class="page-item @(Model.Paginacion.TienePaginaAnterior ? "" : "disabled")">
+                    <a class="page-link" asp-action="Reporte" asp-route-pagina="1" asp-route-desde="@Model.Desde?.ToString("yyyy-MM-dd")" asp-route-hasta="@Model.Hasta?.ToString("yyyy-MM-dd")" title="Primera página">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                </li>
+
+                <!-- Página anterior -->
+                <li class="page-item @(Model.Paginacion.TienePaginaAnterior ? "" : "disabled")">
+                    <a class="page-link" asp-action="Reporte" asp-route-pagina="@(Model.Paginacion.PaginaActual - 1)" asp-route-desde="@Model.Desde?.ToString("yyyy-MM-dd")" asp-route-hasta="@Model.Hasta?.ToString("yyyy-MM-dd")" title="Página anterior">
+                        <i class="fas fa-angle-left"></i>
+                    </a>
+                </li>
+
+                <!-- Números de página -->
+                @{
+                    int inicio = Math.Max(1, Model.Paginacion.PaginaActual - 2);
+                    int fin = Math.Min(Model.Paginacion.TotalPaginas, Model.Paginacion.PaginaActual + 2);
+                }
+                @for (int i = inicio; i <= fin; i++)
+                {
+                    <li class="page-item @(i == Model.Paginacion.PaginaActual ? "active" : "")">
+                        <a class="page-link" asp-action="Reporte" asp-route-pagina="@i" asp-route-desde="@Model.Desde?.ToString("yyyy-MM-dd")" asp-route-hasta="@Model.Hasta?.ToString("yyyy-MM-dd")">@i</a>
+                    </li>
+                }
+
+                <!-- Página siguiente -->
+                <li class="page-item @(Model.Paginacion.TienePaginaSiguiente ? "" : "disabled")">
+                    <a class="page-link" asp-action="Reporte" asp-route-pagina="@(Model.Paginacion.PaginaActual + 1)" asp-route-desde="@Model.Desde?.ToString("yyyy-MM-dd")" asp-route-hasta="@Model.Hasta?.ToString("yyyy-MM-dd")" title="Página siguiente">
+                        <i class="fas fa-angle-right"></i>
+                    </a>
+                </li>
+
+                <!-- Última página -->
+                <li class="page-item @(Model.Paginacion.TienePaginaSiguiente ? "" : "disabled")">
+                    <a class="page-link" asp-action="Reporte" asp-route-pagina="@Model.Paginacion.TotalPaginas" asp-route-desde="@Model.Desde?.ToString("yyyy-MM-dd")" asp-route-hasta="@Model.Hasta?.ToString("yyyy-MM-dd")" title="Última página">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function limpiarFiltros() {
+            // Establecer valores por defecto: mes actual
+            var hoy = new Date();
+            var primerDiaMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+            
+            // Formatear a yyyy-MM-dd
+            var formato = function(fecha) {
+                var año = fecha.getFullYear();
+                var mes = String(fecha.getMonth() + 1).padStart(2, '0');
+                var dia = String(fecha.getDate()).padStart(2, '0');
+                return año + '-' + mes + '-' + dia;
+            };
+            
+            document.getElementById('fechaDesde').value = formato(primerDiaMes);
+            document.getElementById('fechaHasta').value = formato(hoy);
+            
+            // Enviar el formulario automáticamente
+            document.getElementById('formReporte').submit();
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var fechaDesde = document.getElementById('fechaDesde');
+            var fechaHasta = document.getElementById('fechaHasta');
+            var formReporte = document.getElementById('formReporte');
+            var hoy = '@hoy';
+
+            // Establecer fecha mínima para "Hasta" cuando cambia "Desde"
+            fechaDesde.addEventListener('change', function () {
+                fechaHasta.min = this.value;
+                if (fechaHasta.value && fechaHasta.value < this.value) {
+                    fechaHasta.value = this.value;
+                }
+            });
+
+            // Validación antes de enviar el formulario
+            formReporte.addEventListener('submit', function (e) {
+                if (fechaDesde.value && fechaHasta.value) {
+                    if (fechaDesde.value > fechaHasta.value) {
+                        e.preventDefault();
+                        alert('La fecha "Desde" no puede ser mayor que la fecha "Hasta".');
+                        fechaDesde.focus();
+                        return false;
+                    }
+                }
+
+                // Validar que las fechas no sean futuras
+                if (fechaDesde.value > hoy) {
+                    e.preventDefault();
+                    alert('La fecha "Desde" no puede ser una fecha futura.');
+                    fechaDesde.focus();
+                    return false;
+                }
+
+                if (fechaHasta.value > hoy) {
+                    e.preventDefault();
+                    alert('La fecha "Hasta" no puede ser una fecha futura.');
+                    fechaHasta.focus();
+                    return false;
+                }
+            });
+
+            // Inicializar fecha mínima para "Hasta"
+            if (fechaDesde.value) {
+                fechaHasta.min = fechaDesde.value;
+            }
+        });
+    </script>
+}

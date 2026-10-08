@@ -1,0 +1,81 @@
+@model Biblioteca.Web.Models.Libro
+
+@{
+    ViewData["Title"] = "Eliminar Libro";
+}
+
+<div class="container-fluid">
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">
+                <i class="fas fa-trash-alt text-danger me-2"></i>Eliminar Libro
+            </h1>
+            <p class="text-muted mb-0">Confirma la eliminación del libro</p>
+        </div>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Volver al Listado
+        </a>
+    </div>
+
+    <!-- Confirmación -->
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>¿Está seguro de eliminar este libro?</strong><br />
+                        Esta acción marcará el libro como inactivo (eliminación lógica).
+                    </div>
+
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4 text-muted">
+                            <i class="fas fa-heading me-1"></i>Título
+                        </dt>
+                        <dd class="col-sm-8 fw-medium">@Html.DisplayFor(model => model.Titulo)</dd>
+
+                        <dt class="col-sm-4 text-muted">
+                            <i class="fas fa-barcode me-1"></i>ISBN
+                        </dt>
+                        <dd class="col-sm-8"><code>@Html.DisplayFor(model => model.ISBN)</code></dd>
+
+                        <dt class="col-sm-4 text-muted">
+                            <i class="fas fa-user me-1"></i>Autor
+                        </dt>
+                        <dd class="col-sm-8">
+                            <span class="badge bg-info text-dark">
+                                <i class="fas fa-user-edit me-1"></i>@Html.DisplayFor(model => model.NombreAutor)
+                            </span>
+                        </dd>
+
+                        <dt class="col-sm-4 text-muted">
+                            <i class="fas fa-copy me-1"></i>Ejemplares
+                        </dt>
+                        <dd class="col-sm-8">
+                            <span class="badge bg-secondary">
+                                <i class="fas fa-layer-group me-1"></i>@Html.DisplayFor(model => model.Ejemplares)
+                            </span>
+                        </dd>
+                    </dl>
+                </div>
+                <div class="card-footer bg-light">
+                    <form asp-action="Delete">
+                        <input type="hidden" asp-for="LibroId" />
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-times me-1"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-1"></i>Confirmar Eliminación
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

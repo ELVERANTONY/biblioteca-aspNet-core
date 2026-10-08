@@ -1,0 +1,75 @@
+@model Biblioteca.Web.Models.Socio
+
+@{
+    ViewData["Title"] = "Crear Socio";
+}
+
+<div class="container-fluid">
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">
+                <i class="fas fa-user-plus text-success me-2"></i>Crear Nuevo Socio
+            </h1>
+            <p class="text-muted mb-0">Completa los datos del nuevo socio</p>
+        </div>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Volver al Listado
+        </a>
+    </div>
+
+    <!-- Formulario -->
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-user me-2"></i>Información del Socio
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Por favor, corrija los siguientes errores:
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="DNI" class="form-label">
+                                <i class="fas fa-id-card me-1"></i>DNI
+                            </label>
+                            <input asp-for="DNI" class="form-control" maxlength="8" placeholder="Ingrese el DNI (8 caracteres)" />
+                            <span asp-validation-for="DNI" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Nombre" class="form-label">
+                                <i class="fas fa-user me-1"></i>Nombre Completo
+                            </label>
+                            <input asp-for="Nombre" class="form-control" placeholder="Ingrese el nombre completo" />
+                            <span asp-validation-for="Nombre" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Email" class="form-label">
+                                <i class="fas fa-envelope me-1"></i>Email
+                            </label>
+                            <input asp-for="Email" class="form-control" placeholder="Ingrese el email" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-times me-1"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-1"></i>Guardar Socio
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
